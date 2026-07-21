@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+:root {
+  --cimb-red: #d31820;
+  --cimb-dark: #7a1f2b;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: #f3f4f6;
+  color: #1f2937;
+}

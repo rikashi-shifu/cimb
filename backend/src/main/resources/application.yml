@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: cimb-security-demo
+
+  datasource:
+    # Supabase = PostgreSQL. Provide these via environment variables (see README / .env.example).
+    # Use the Supabase "Session pooler" or "Direct connection" JDBC URL.
+    url: ${SUPABASE_DB_URL}
+    username: ${SUPABASE_DB_USERNAME}
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+
+  jpa:
+    hibernate:
+      # Tables are created by supabase/schema.sql (run once in the Supabase SQL editor).
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: false
+    open-in-view: false
+
+server:
+  port: ${PORT:8080}
+
+# ----- Application-level security material (all injected from the environment) -----
+app:
+  # AES-256 key, base64-encoded 32 bytes. Generate with:
+  #   openssl rand -base64 32
+  encryption:
+    key: ${APP_ENCRYPTION_KEY}
+  # HMAC secret used to sign/verify payment instructions (Module 2).
+  payment:
+    signing-key: ${PAYMENT_SIGNING_KEY:change-me-payment-signing-secret}
+  # Directory where the mock encrypted backup export is written (Module 4).
+  backup:
+    dir: ${APP_BACKUP_DIR:./backups}
+
+logging:
+  level:
+    com.cimb.demo: INFO
