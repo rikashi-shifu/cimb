@@ -15,7 +15,7 @@ class AuthServiceCwe303Test {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     private User demoUser(String password) {
-        return new User("harry", "Harry", Role.CUSTOMER,
+        return new User("user", "User", Role.CUSTOMER,
                 encoder.encode(password), password.length(), "JBSWY3DPEHPK3PXP");
     }
 

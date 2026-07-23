@@ -89,6 +89,9 @@ Fill in `backend/.env`:
 | `PAYMENT_SIGNING_KEY`  | any long random string                                                                                                                                                                             |
 | `APP_BACKUP_DIR`       | leave as `./backups`                                                                                                                                                                               |
 
+`run.ps1` automatically maps the `SUPABASE_DB_*` values above to Spring Boot's `SPRING_DATASOURCE_*`
+settings and switches Hibernate to `update` for Supabase-backed runs.
+
 ### 3. Run
 
 ```powershell
@@ -97,6 +100,23 @@ Fill in `backend/.env`:
 
 `run.ps1` loads `backend/.env` into the environment and runs `mvn spring-boot:run`.
 Then open **http://localhost:8080**.
+
+### Inspecting the local H2 memory database
+
+When you run without Supabase variables, the app falls back to the in-memory H2 database.
+If `backend/.env` contains `SUPABASE_DB_*` values, `run.ps1` will connect the app to Supabase instead,
+so there is no H2 memory database to inspect in that run.
+
+For the H2 run, open the embedded console from the Spring app at:
+
+- URL: `http://localhost:8090/h2-console`
+- JDBC URL: `jdbc:h2:mem:cimbdemo;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1`
+- Username: `sa`
+- Password: empty
+
+If the console shows `Database "mem:cimbdemo" not found`, the app is not running on H2.
+Temporarily remove or rename `backend/.env`, or delete the `SUPABASE_DB_*` lines, then start
+the app again.
 
 <details>
 <summary>Prefer to run manually / on macOS / Linux?</summary>

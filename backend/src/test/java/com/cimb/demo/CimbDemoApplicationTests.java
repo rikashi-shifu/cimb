@@ -1,8 +1,6 @@
 package com.cimb.demo;
 
-import com.cimb.demo.config.SecureModeState;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.cimb.demo.config.SecureModeState;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * End-to-end wiring tests across all four modules, driven through the HTTP API on H2.
@@ -54,7 +54,7 @@ class CimbDemoApplicationTests {
     void module1_vulnerableLogin_acceptsPasswordPlusExtra() throws Exception {
         setSecure(false);
         JsonNode r = postJson("/api/auth/login",
-                "{\"username\":\"harry\",\"password\":\"Password1!IGNORED_EXTRA\"}", null);
+                "{\"username\":\"user\",\"password\":\"Password1!IGNORED_EXTRA\"}", null);
         assertThat(r.get("success").asBoolean()).isTrue();
         assertThat(r.has("token")).isTrue();
     }
@@ -65,12 +65,12 @@ class CimbDemoApplicationTests {
 
         // Password + extra is now rejected outright.
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"harry\",\"password\":\"Password1!IGNORED_EXTRA\"}"))
+                        .content("{\"username\":\"user\",\"password\":\"Password1!IGNORED_EXTRA\"}"))
                 .andExpect(status().isUnauthorized());
 
         // Correct password triggers the OTP second factor; verify completes the login.
         JsonNode step1 = postJson("/api/auth/login",
-                "{\"username\":\"harry\",\"password\":\"Password1!\"}", null);
+                "{\"username\":\"user\",\"password\":\"Password1!\"}", null);
         assertThat(step1.get("mfaRequired").asBoolean()).isTrue();
         String challengeId = step1.get("challengeId").asText();
         String otp = step1.get("demoOtp").asText();
@@ -84,7 +84,7 @@ class CimbDemoApplicationTests {
     @Test
     void module2_vulnerablePayment_succeedsWithCardDetailsOnly() throws Exception {
         setSecure(false);
-        String token = loginVulnerable("harry", "Password1!");
+        String token = loginVulnerable("user", "Password1!");
         String body = "{\"amount\":\"250.00\",\"merchant\":\"Shopee MY\","
                 + "\"cardNumber\":\"4111111111111111\",\"expiry\":\"12/28\",\"cvv\":\"123\"}";
         JsonNode r = postJson("/api/payments/pay", body, token);
@@ -93,7 +93,7 @@ class CimbDemoApplicationTests {
 
     @Test
     void module2_securePayment_rejectsTamperedInstruction() throws Exception {
-        String token = loginVulnerable("harry", "Password1!");
+        String token = loginVulnerable("user", "Password1!");
         setSecure(true);
 
         JsonNode prep = postJson("/api/payments/prepare",
@@ -114,9 +114,9 @@ class CimbDemoApplicationTests {
     @Test
     void module3_vulnerableTransfer_doubleFire_debitsTwice() throws Exception {
         setSecure(false);
-        String token = loginVulnerable("harry", "Password1!");
+        String token = loginVulnerable("user", "Password1!");
 
-        String body = "{\"fromAccount\":\"7074009478\",\"toAccount\":\"8012345678\","
+        String body = "{\"fromAccount\":\"7048123945\",\"toAccount\":\"8012345678\","
                 + "\"amount\":\"50.00\",\"idempotencyKey\":\"dup-key-1\"}";
         JsonNode first = postJson("/api/transfers", body, token);
         JsonNode second = postJson("/api/transfers", body, token);
@@ -130,10 +130,10 @@ class CimbDemoApplicationTests {
     @Test
     void module3_secureTransfer_duplicateKey_isBlocked() throws Exception {
         // Log in first (vulnerable) so we have a session, then switch to secure for the transfer.
-        String token = loginVulnerable("harry", "Password1!");
+        String token = loginVulnerable("user", "Password1!");
         setSecure(true);
 
-        String body = "{\"fromAccount\":\"7074009478\",\"toAccount\":\"8012345678\","
+        String body = "{\"fromAccount\":\"7048123945\",\"toAccount\":\"8012345678\","
                 + "\"amount\":\"50.00\",\"idempotencyKey\":\"dup-key-secure\"}";
         mvc.perform(post("/api/transfers").header("X-Session-Token", token)
                 .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isOk());
@@ -144,7 +144,7 @@ class CimbDemoApplicationTests {
 
     @Test
     void module4_rawDbView_deniedForCustomer_allowedForAdmin() throws Exception {
-        String customer = loginVulnerable("harry", "Password1!");
+        String customer = loginVulnerable("user", "Password1!");
         mvc.perform(get("/api/accounts/raw").header("X-Session-Token", customer))
                 .andExpect(status().isForbidden());
 

@@ -18,11 +18,13 @@ function newKey() {
 }
 
 export default function TransferPanel(props: { secure: boolean }) {
-  const [from, setFrom] = useState("7074009478");
+  const [from, setFrom] = useState("7048123945");
   const [to, setTo] = useState("8012345678");
   const [amount, setAmount] = useState("100.00");
   const [key, setKey] = useState(newKey());
-  const [results, setResults] = useState<{ kind: "ok" | "err"; text: string }[]>([]);
+  const [results, setResults] = useState<
+    { kind: "ok" | "err"; text: string }[]
+  >([]);
   const [rows, setRows] = useState<TransferRow[]>([]);
   const [busy, setBusy] = useState(false);
 
@@ -37,18 +39,23 @@ export default function TransferPanel(props: { secure: boolean }) {
   async function submit(count: number) {
     setBusy(true);
     setResults([]);
-    const body = { fromAccount: from, toAccount: to, amount, idempotencyKey: key };
+    const body = {
+      fromAccount: from,
+      toAccount: to,
+      amount,
+      idempotencyKey: key,
+    };
     const calls = Array.from({ length: count }, () =>
       api
-        .post<{ status: string; newSourceBalance: number }>("/api/transfers", body)
-        .then(
-          (r) =>
-            ({
-              kind: "ok" as const,
-              text: `${r.status} — new source balance MYR ${Number(r.newSourceBalance).toFixed(2)}`,
-            })
+        .post<{ status: string; newSourceBalance: number }>(
+          "/api/transfers",
+          body,
         )
-        .catch((e) => ({ kind: "err" as const, text: (e as Error).message }))
+        .then((r) => ({
+          kind: "ok" as const,
+          text: `${r.status} — new source balance MYR ${Number(r.newSourceBalance).toFixed(2)}`,
+        }))
+        .catch((e) => ({ kind: "err" as const, text: (e as Error).message })),
     );
     const settled = await Promise.all(calls);
     setResults(settled);

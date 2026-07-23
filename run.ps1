@@ -23,5 +23,18 @@ Get-Content $envFile | ForEach-Object {
     }
 }
 
+# Bridge the Supabase template variables to the Spring Boot datasource keys.
+if ([Environment]::GetEnvironmentVariable("SUPABASE_DB_URL", "Process")) {
+    [Environment]::SetEnvironmentVariable("SPRING_DATASOURCE_URL",
+        [Environment]::GetEnvironmentVariable("SUPABASE_DB_URL", "Process"), "Process")
+    [Environment]::SetEnvironmentVariable("SPRING_DATASOURCE_USERNAME",
+        [Environment]::GetEnvironmentVariable("SUPABASE_DB_USERNAME", "Process"), "Process")
+    [Environment]::SetEnvironmentVariable("SPRING_DATASOURCE_PASSWORD",
+        [Environment]::GetEnvironmentVariable("SUPABASE_DB_PASSWORD", "Process"), "Process")
+    [Environment]::SetEnvironmentVariable("SPRING_DATASOURCE_DRIVER_CLASS_NAME", "org.postgresql.Driver", "Process")
+    [Environment]::SetEnvironmentVariable("SPRING_JPA_HIBERNATE_DDL_AUTO", "update", "Process")
+    Write-Host "mapped SUPABASE_DB_* to SPRING_DATASOURCE_*"
+}
+
 Set-Location (Join-Path $PSScriptRoot "backend")
 mvn spring-boot:run

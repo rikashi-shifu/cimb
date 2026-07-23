@@ -19,8 +19,8 @@ class AuditServiceTest {
 
     @Test
     void chainIsValid_afterAppendingEntries() {
-        audit.record("harry", "LOGIN_SUCCESS", "no MFA");
-        audit.record("harry", "TRANSFER_COMPLETED", "amount=100");
+        audit.record("user", "LOGIN_SUCCESS", "no MFA");
+        audit.record("user", "TRANSFER_COMPLETED", "amount=100");
         audit.record("admin", "SECURE_MODE_CHANGED", "secure=true");
 
         AuditService.VerificationResult result = audit.verifyChain();
@@ -31,9 +31,9 @@ class AuditServiceTest {
 
     @Test
     void tamperingWithAHistoricalRow_breaksTheChain() {
-        audit.record("harry", "LOGIN_SUCCESS", "no MFA");
-        AuditEntry second = audit.record("harry", "TRANSFER_COMPLETED", "amount=100");
-        audit.record("harry", "PAYMENT_COMPLETED", "amount=250");
+        audit.record("user", "LOGIN_SUCCESS", "no MFA");
+        AuditEntry second = audit.record("user", "TRANSFER_COMPLETED", "amount=100");
+        audit.record("user", "PAYMENT_COMPLETED", "amount=250");
 
         // Tamper directly in storage, bypassing the service (as an attacker would).
         em.getEntityManager()

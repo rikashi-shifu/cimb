@@ -1,35 +1,37 @@
 spring:
+  profiles:
+    active: local
   application:
     name: cimb-security-demo
 
   datasource:
-    # Supabase = PostgreSQL. Provide these via environment variables (see README / .env.example).
-    # Use the Supabase "Session pooler" or "Direct connection" JDBC URL.
-    url: ${SUPABASE_DB_URL}
-    username: ${SUPABASE_DB_USERNAME}
-    password: ${SUPABASE_DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    # Default to the local H2 demo database. Set SPRING_DATASOURCE_URL to a real JDBC URL if you
+    # want to use Supabase instead.
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:cimbdemo;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
     hikari:
       maximum-pool-size: 5
 
   jpa:
     hibernate:
-      # Tables are created by supabase/schema.sql (run once in the Supabase SQL editor).
-      ddl-auto: none
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:create-drop}
     properties:
       hibernate:
+        dialect: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
         format_sql: false
     open-in-view: false
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8090}
 
 # ----- Application-level security material (all injected from the environment) -----
 app:
   # AES-256 key, base64-encoded 32 bytes. Generate with:
   #   openssl rand -base64 32
   encryption:
-    key: ${APP_ENCRYPTION_KEY}
+    key: ${APP_ENCRYPTION_KEY:DA3fCK0JE1V0OTVFWaknpKm3N3zM8nlkWQ5wc8w5y7o=}
   # HMAC secret used to sign/verify payment instructions (Module 2).
   payment:
     signing-key: ${PAYMENT_SIGNING_KEY:change-me-payment-signing-secret}

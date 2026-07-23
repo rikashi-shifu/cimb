@@ -1,12 +1,21 @@
 package com.cimb.demo.auth;
 
-import com.cimb.demo.session.SessionService;
-import jakarta.validation.constraints.NotBlank;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import com.cimb.demo.session.SessionService;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * Module 1 — Authentication endpoints (CWE-303 / SR2).
@@ -54,9 +63,13 @@ public class AuthController {
         return Map.of("ok", true);
     }
 
-    public record LoginRequest(@NotBlank String username, String password) {
+    public record LoginRequest(
+            @JsonProperty("username") @NotBlank String username,
+            @JsonProperty("password") String password) {
     }
 
-    public record OtpRequest(@NotBlank String challengeId, @NotBlank String code) {
+    public record OtpRequest(
+            @JsonProperty("challengeId") @NotBlank String challengeId,
+            @JsonProperty("code") @NotBlank String code) {
     }
 }

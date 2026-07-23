@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:cimbdemo;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+app:
+  encryption:
+    key: DA3fCK0JE1V0OTVFWaknpKm3N3zM8nlkWQ5wc8w5y7o=
+  payment:
+    signing-key: change-me-payment-signing-secret
+  backup:
+    dir: ./backups

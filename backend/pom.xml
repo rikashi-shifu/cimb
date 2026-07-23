@@ -50,11 +50,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- In-memory DB for tests so JUnit runs without Supabase credentials -->
+        <!-- In-memory DB for local/demo runs and tests so the app works without Supabase credentials -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
