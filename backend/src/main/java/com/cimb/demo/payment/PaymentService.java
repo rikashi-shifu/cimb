@@ -17,14 +17,17 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Module 2 — Payment authorization (CWE-345: Insufficient Verification of Data Authenticity, SR3).
+ * Module 2 — Payment authorization (CWE-287: Insufficient Verification of Data
+ * Authenticity, SR3).
  *
- * Secure Mode OFF (vulnerable): a payment completes with only card number, expiry and CVV — no
- *   OTP, no server-side verification of the instruction. This is the "non-3DS" behaviour.
+ * Secure Mode OFF (vulnerable): a payment completes with only card number,
+ * expiry and CVV — no OTP, no server-side verification of the instruction. This
+ * is the "non-3DS" behaviour.
  *
- * Secure Mode ON (fixed): the server requires a valid OTP AND a correctly signed payment
- *   instruction, and recomputes the signature over the SUBMITTED fields. Any unsigned or
- *   altered request (e.g. amount changed after signing) is rejected.
+ * Secure Mode ON (fixed): the server requires a valid OTP AND a correctly
+ * signed payment instruction, and recomputes the signature over the SUBMITTED
+ * fields. Any unsigned or altered request (e.g. amount changed after signing)
+ * is rejected.
  */
 @Service
 public class PaymentService {
@@ -38,8 +41,8 @@ public class PaymentService {
     private final AuditService audit;
 
     public PaymentService(PaymentRepository payments, PaymentSigner signer, TotpService totp,
-                          UserRepository users, SecureModeState secureMode, FakeGateway gateway,
-                          AuditService audit) {
+            UserRepository users, SecureModeState secureMode, FakeGateway gateway,
+            AuditService audit) {
         this.payments = payments;
         this.signer = signer;
         this.totp = totp;
@@ -50,8 +53,9 @@ public class PaymentService {
     }
 
     /**
-     * Secure-mode step 1: produce a signed instruction and a demo OTP. In a real system the
-     * signature would be minted by an HSM/3DS server; here it binds ref+amount+merchant+card.
+     * Secure-mode step 1: produce a signed instruction and a demo OTP. In a
+     * real system the signature would be minted by an HSM/3DS server; here it
+     * binds ref+amount+merchant+card.
      */
     public Map<String, Object> prepare(CurrentUser current, BigDecimal amount, String merchant, String cardNumber) {
         String paymentRef = "PAY-" + UUID.randomUUID();
@@ -77,7 +81,7 @@ public class PaymentService {
             String canonical = signer.canonical(
                     cmd.paymentRef(), cmd.amount().toPlainString(), cmd.merchant(), cardLast4);
             if (!signer.verify(canonical, cmd.signature())) {
-                record(cardLast4, cmd, "REJECTED", "unsigned or altered instruction (CWE-345 blocked)");
+                record(cardLast4, cmd, "REJECTED", "unsigned or altered instruction (CWE-287 blocked)");
                 audit.record(current.username(), "PAYMENT_REJECTED", "bad signature amount=" + cmd.amount());
                 throw ApiException.badRequest(
                         "Payment rejected: instruction is unsigned or was altered after signing.");
@@ -103,7 +107,7 @@ public class PaymentService {
         Payment saved = record(cardLast4, cmd, "COMPLETED", note);
         audit.record(current.username(), "PAYMENT_COMPLETED",
                 "amount=" + cmd.amount() + " merchant=" + cmd.merchant()
-                        + " secure=" + secureMode.isSecure());
+                + " secure=" + secureMode.isSecure());
 
         return Map.of(
                 "status", saved.getStatus(),
@@ -139,9 +143,13 @@ public class PaymentService {
         return digits.length() >= 4 ? digits.substring(digits.length() - 4) : digits;
     }
 
-    /** Fields submitted to the pay endpoint. Signature/otp are only consulted in secure mode. */
+    /**
+     * Fields submitted to the pay endpoint. Signature/otp are only consulted in
+     * secure mode.
+     */
     public record PayCommand(String paymentRef, BigDecimal amount, String merchant,
-                             String cardNumber, String expiry, String cvv,
-                             String signature, String otp) {
+            String cardNumber, String expiry, String cvv,
+            String signature, String otp) {
+
     }
 }

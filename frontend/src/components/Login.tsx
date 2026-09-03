@@ -68,7 +68,7 @@ export default function Login(props: {
     <div className="mx-auto max-w-md">
       <ModuleCard
         title="Module 1 — Login (Authentication)"
-        cwe="CWE-303"
+        cwe="CWE-20"
         sr="SR2"
       >
         <p className="mb-3 text-sm text-gray-600">
@@ -86,7 +86,7 @@ export default function Login(props: {
             />
 
             <div className="rounded border border-dashed border-gray-300 bg-gray-50 p-2 text-xs text-gray-600">
-              <p className="font-semibold text-gray-700">CWE-303 attack demo</p>
+              <p className="font-semibold text-gray-700">CWE-20 attack demo</p>
               <p>
                 The seeded password is{" "}
                 <code className="font-mono">Password1!</code>. Append extra

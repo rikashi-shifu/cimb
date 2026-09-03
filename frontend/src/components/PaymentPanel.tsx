@@ -21,7 +21,10 @@ export default function PaymentPanel(props: { secure: boolean }) {
   const [cvv, setCvv] = useState("123");
   const [tamper, setTamper] = useState(false);
   const [wrongOtp, setWrongOtp] = useState(false);
-  const [msg, setMsg] = useState<{ kind: "ok" | "err" | "info"; text: string } | null>(null);
+  const [msg, setMsg] = useState<{
+    kind: "ok" | "err" | "info";
+    text: string;
+  } | null>(null);
   const [rows, setRows] = useState<PaymentRow[]>([]);
   const [busy, setBusy] = useState(false);
 
@@ -61,7 +64,10 @@ export default function PaymentPanel(props: { secure: boolean }) {
         };
       }
 
-      const r = await api.post<{ status: string; note: string }>("/api/payments/pay", body);
+      const r = await api.post<{ status: string; note: string }>(
+        "/api/payments/pay",
+        body,
+      );
       setMsg({ kind: "ok", text: `${r.status} — ${r.note}` });
     } catch (e) {
       setMsg({ kind: "err", text: (e as Error).message });
@@ -73,7 +79,7 @@ export default function PaymentPanel(props: { secure: boolean }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <ModuleCard title="Module 2 — Card Payment" cwe="CWE-345" sr="SR3">
+      <ModuleCard title="Module 2 — Card Payment" cwe="CWE-287" sr="SR3">
         <div className="grid grid-cols-2 gap-3">
           <Field label="Merchant" value={merchant} onChange={setMerchant} />
           <Field label="Amount (MYR)" value={amount} onChange={setAmount} />
@@ -86,10 +92,17 @@ export default function PaymentPanel(props: { secure: boolean }) {
 
         {props.secure && (
           <div className="mt-3 space-y-1 rounded border border-dashed border-gray-300 bg-gray-50 p-2 text-xs text-gray-600">
-            <p className="font-semibold text-gray-700">Secure-mode attack simulations</p>
+            <p className="font-semibold text-gray-700">
+              Secure-mode attack simulations
+            </p>
             <label className="flex items-center gap-2">
-              <input type="checkbox" checked={tamper} onChange={(e) => setTamper(e.target.checked)} />
-              Tamper amount after signing (should be rejected — altered instruction)
+              <input
+                type="checkbox"
+                checked={tamper}
+                onChange={(e) => setTamper(e.target.checked)}
+              />
+              Tamper amount after signing (should be rejected — altered
+              instruction)
             </label>
             <label className="flex items-center gap-2">
               <input
@@ -114,7 +127,11 @@ export default function PaymentPanel(props: { secure: boolean }) {
             : "Secure OFF: the payment completes with only card details — no OTP, no server verification (non-3DS)."}
         </p>
 
-        {msg && <div className="mt-3">{<Notice kind={msg.kind}>{msg.text}</Notice>}</div>}
+        {msg && (
+          <div className="mt-3">
+            {<Notice kind={msg.kind}>{msg.text}</Notice>}
+          </div>
+        )}
       </ModuleCard>
 
       <ModuleCard title="Recent Payments">

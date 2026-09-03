@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
 /**
- * Module 1 — Authentication endpoints (CWE-303 / SR2).
+ * Module 1 — Authentication endpoints (CWE-20 / SR2).
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -64,12 +64,17 @@ public class AuthController {
     }
 
     public record LoginRequest(
-            @JsonProperty("username") @NotBlank String username,
+            @JsonProperty("username")
+            @NotBlank String username,
             @JsonProperty("password") String password) {
+
     }
 
     public record OtpRequest(
-            @JsonProperty("challengeId") @NotBlank String challengeId,
-            @JsonProperty("code") @NotBlank String code) {
+            @JsonProperty("challengeId")
+            @NotBlank String challengeId,
+            @JsonProperty("code")
+            @NotBlank String code) {
+
     }
 }

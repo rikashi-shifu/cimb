@@ -9,12 +9,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
- * Signs and verifies payment instructions with HMAC-SHA256 (Module 2, CWE-345 / SR3).
+ * Signs and verifies payment instructions with HMAC-SHA256 (Module 2, CWE-287 /
+ * SR3).
  *
- * The canonical instruction binds the fields a payment must not be altered on: reference,
- * amount, merchant and the card's last 4 digits. A verifier recomputes the HMAC from the
- * SUBMITTED fields, so any tampering (e.g. changing the amount after signing) invalidates
- * the signature, and an unsigned request has nothing to verify.
+ * The canonical instruction binds the fields a payment must not be altered on:
+ * reference, amount, merchant and the card's last 4 digits. A verifier
+ * recomputes the HMAC from the SUBMITTED fields, so any tampering (e.g.
+ * changing the amount after signing) invalidates the signature, and an unsigned
+ * request has nothing to verify.
  */
 @Component
 public class PaymentSigner {
@@ -25,7 +27,9 @@ public class PaymentSigner {
         this.key = props.getPayment().getSigningKey().getBytes(StandardCharsets.UTF_8);
     }
 
-    /** Canonical string over the fields that authorise a specific payment. */
+    /**
+     * Canonical string over the fields that authorise a specific payment.
+     */
     public String canonical(String paymentRef, String amount, String merchant, String cardLast4) {
         return String.join("|", paymentRef, amount, merchant, cardLast4);
     }
@@ -40,7 +44,10 @@ public class PaymentSigner {
         }
     }
 
-    /** Constant-time verification that {@code signature} is a valid HMAC over {@code canonical}. */
+    /**
+     * Constant-time verification that {@code signature} is a valid HMAC over
+     * {@code canonical}.
+     */
     public boolean verify(String canonical, String signature) {
         if (signature == null || signature.isBlank()) {
             return false;

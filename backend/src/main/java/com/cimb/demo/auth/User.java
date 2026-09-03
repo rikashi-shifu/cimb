@@ -4,9 +4,10 @@ import com.cimb.demo.session.Role;
 import jakarta.persistence.*;
 
 /**
- * A demo user. {@code passwordLength} stores the length of the original plaintext password
- * and exists ONLY to reproduce the CWE-303 truncation bug in Module 1: the vulnerable login
- * path compares only the first {@code passwordLength} characters of what the user submits.
+ * A demo user. {@code passwordLength} stores the length of the original
+ * plaintext password and exists ONLY to reproduce the CWE-20 truncation bug in
+ * Module 1: the vulnerable login path compares only the first
+ * {@code passwordLength} characters of what the user submits.
  */
 @Entity
 @Table(name = "users")
@@ -36,7 +37,7 @@ public class User {
     }
 
     public User(String username, String displayName, Role role,
-                String passwordHash, int passwordLength, String totpSecret) {
+            String passwordHash, int passwordLength, String totpSecret) {
         this.username = username;
         this.displayName = displayName;
         this.role = role;
@@ -45,10 +46,27 @@ public class User {
         this.totpSecret = totpSecret;
     }
 
-    public String getUsername() { return username; }
-    public String getDisplayName() { return displayName; }
-    public Role getRole() { return role; }
-    public String getPasswordHash() { return passwordHash; }
-    public int getPasswordLength() { return passwordLength; }
-    public String getTotpSecret() { return totpSecret; }
+    public String getUsername() {
+        return username;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public int getPasswordLength() {
+        return passwordLength;
+    }
+
+    public String getTotpSecret() {
+        return totpSecret;
+    }
 }

@@ -7,8 +7,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Module 1 — the core CWE-303 behaviour: the vulnerable check truncates the submitted
- * password to the stored length, the secure check compares it in full.
+ * Module 1 — the core CWE-20 behaviour: the vulnerable check truncates the
+ * submitted password to the stored length, the secure check compares it in
+ * full.
  */
 class AuthServiceCwe303Test {
 
@@ -33,7 +34,7 @@ class AuthServiceCwe303Test {
     @Test
     void vulnerableCheck_acceptsPasswordPlusExtra_theBug() {
         AuthService svc = serviceWith();
-        // CWE-303: correct password followed by ANY extra text still authenticates.
+        // CWE-20: correct password followed by ANY extra text still authenticates.
         assertThat(svc.vulnerableCheck(demoUser("Password1!"), "Password1!IGNORED_EXTRA")).isTrue();
     }
 

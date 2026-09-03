@@ -13,15 +13,17 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Module 1 — Authentication (CWE-303: Incorrect Implementation of Authentication Algorithm, SR2).
+ * Module 1 — Authentication (CWE-20: Incorrect Implementation of Authentication
+ * Algorithm, SR2).
  *
- * Secure Mode OFF (vulnerable): the password check truncates the submitted password to the
- *   length of the stored password before comparing, so the correct password followed by ANY
- *   extra characters still authenticates ("Password1!" and "Password1!junk" both pass). This
- *   reproduces the historical CIMB partial-password-match bug. No second factor.
+ * Secure Mode OFF (vulnerable): the password check truncates the submitted
+ * password to the length of the stored password before comparing, so the
+ * correct password followed by ANY extra characters still authenticates
+ * ("Password1!" and "Password1!junk" both pass). This reproduces the historical
+ * CIMB partial-password-match bug. No second factor.
  *
- * Secure Mode ON (fixed): a full, exact bcrypt comparison against the stored hash, followed
- *   by a mandatory TOTP second factor simulating Secure2u.
+ * Secure Mode ON (fixed): a full, exact bcrypt comparison against the stored
+ * hash, followed by a mandatory TOTP second factor simulating Secure2u.
  */
 @Service
 public class AuthService {
@@ -37,7 +39,7 @@ public class AuthService {
     private final Map<String, Challenge> challenges = new ConcurrentHashMap<>();
 
     public AuthService(UserRepository users, BCryptPasswordEncoder encoder, TotpService totp,
-                       SecureModeState secureMode, SessionService sessions, AuditService audit) {
+            SecureModeState secureMode, SessionService sessions, AuditService audit) {
         this.users = users;
         this.encoder = encoder;
         this.totp = totp;
@@ -98,8 +100,9 @@ public class AuthService {
     }
 
     /**
-     * VULNERABLE (CWE-303): compare only the first {@code storedLength} characters of the
-     * submission, ignoring any trailing characters. Correct password + extra text => pass.
+     * VULNERABLE (CWE-20): compare only the first {@code storedLength}
+     * characters of the submission, ignoring any trailing characters. Correct
+     * password + extra text => pass.
      */
     boolean vulnerableCheck(User user, String submitted) {
         if (submitted == null) {
@@ -110,7 +113,9 @@ public class AuthService {
         return encoder.matches(truncated, user.getPasswordHash());
     }
 
-    /** FIXED: full, exact bcrypt comparison of the entire submitted password. */
+    /**
+     * FIXED: full, exact bcrypt comparison of the entire submitted password.
+     */
     boolean secureCheck(User user, String submitted) {
         return submitted != null && encoder.matches(submitted, user.getPasswordHash());
     }
@@ -120,12 +125,15 @@ public class AuthService {
     }
 
     private record Challenge(String username, Instant expiresAt) {
+
     }
 
-    /** Result of a login attempt, shaped for the JSON response. */
+    /**
+     * Result of a login attempt, shaped for the JSON response.
+     */
     public record LoginResult(boolean success, boolean mfaRequired, String message,
-                              String token, String challengeId, String demoOtp,
-                              CurrentUser user) {
+            String token, String challengeId, String demoOtp,
+            CurrentUser user) {
 
         static LoginResult failure(String message) {
             return new LoginResult(false, false, message, null, null, null, null);
@@ -144,10 +152,16 @@ public class AuthService {
             m.put("success", success);
             m.put("mfaRequired", mfaRequired);
             m.put("message", message);
-            if (token != null) m.put("token", token);
-            if (challengeId != null) m.put("challengeId", challengeId);
-            if (demoOtp != null) m.put("demoOtp", demoOtp); // displayed on screen for the demo
-            if (user != null) {
+            if (token != null) {
+                m.put("token", token);
+            }
+            if (challengeId != null) {
+                m.put("challengeId", challengeId);
+            }
+            if (demoOtp != null) {
+                m.put("demoOtp", demoOtp); // displayed on screen for the demo
+
+                        }if (user != null) {
                 m.put("user", Map.of(
                         "username", user.username(),
                         "displayName", user.displayName(),

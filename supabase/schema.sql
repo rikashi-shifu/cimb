@@ -4,13 +4,13 @@
 -- The application seeds demo rows on startup; these statements only create tables.
 -- ============================================================================
 
--- Module 1 — Authentication (CWE-303 / SR2)
+-- Module 1 — Authentication (CWE-20 / SR2)
 create table if not exists users (
     username        text primary key,
     display_name    text        not null,
     role            text        not null,               -- CUSTOMER | ADMIN
     password_hash   text        not null,               -- bcrypt
-    password_length integer     not null,               -- length of original password (drives the CWE-303 truncation bug)
+    password_length integer     not null,               -- length of original password (drives the CWE-20 truncation bug)
     totp_secret     text        not null                -- base32 TOTP seed (Secure2u simulation)
 );
 
@@ -26,7 +26,7 @@ create table if not exists accounts (
     secure_stored   boolean         not null default false
 );
 
--- Module 3 — Duplicate transfer protection (CWE-840 / SR5)
+-- Module 3 — Duplicate transfer protection (CWE-675 / SR5)
 create table if not exists transfers (
     id              text primary key,
     created_at      timestamptz     not null,
@@ -39,7 +39,7 @@ create table if not exists transfers (
 );
 create index if not exists idx_transfers_idem on transfers (idempotency_key);
 
--- Module 2 — Payment authorization (CWE-345 / SR3)
+-- Module 2 — Payment authorization (CWE-287 / SR3)
 create table if not exists payments (
     id              text primary key,
     created_at      timestamptz     not null,

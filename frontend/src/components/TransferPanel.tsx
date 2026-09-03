@@ -65,7 +65,7 @@ export default function TransferPanel(props: { secure: boolean }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <ModuleCard title="Module 3 — Fund Transfer" cwe="CWE-840" sr="SR5">
+      <ModuleCard title="Module 3 — Fund Transfer" cwe="CWE-675" sr="SR5">
         <div className="grid grid-cols-2 gap-3">
           <Field label="From Account" value={from} onChange={setFrom} />
           <Field label="To Account" value={to} onChange={setTo} />

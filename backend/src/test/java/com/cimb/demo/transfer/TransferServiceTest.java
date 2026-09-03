@@ -23,13 +23,18 @@ import com.cimb.demo.audit.AuditService;
 import com.cimb.demo.common.ApiException;
 import com.cimb.demo.config.SecureModeState;
 
-/** Module 3 — duplicate transfer protection (CWE-840). */
+/**
+ * Module 3 — duplicate transfer protection (CWE-675).
+ */
 @ExtendWith(MockitoExtension.class)
 class TransferServiceTest {
 
-    @Mock TransferRepository transfers;
-    @Mock AccountRepository accounts;
-    @Mock AuditService audit;
+    @Mock
+    TransferRepository transfers;
+    @Mock
+    AccountRepository accounts;
+    @Mock
+    AuditService audit;
 
     private Account source;
 
@@ -65,8 +70,8 @@ class TransferServiceTest {
         when(transfers.findFirstByIdempotencyKeyAndStatus("same-key", "COMPLETED"))
                 .thenReturn(Optional.of(already));
 
-        assertThatThrownBy(() ->
-                svc.transfer("7048123945", "8012345678", new BigDecimal("100.00"), "same-key"))
+        assertThatThrownBy(()
+                -> svc.transfer("7048123945", "8012345678", new BigDecimal("100.00"), "same-key"))
                 .isInstanceOf(ApiException.class)
                 .hasMessageContaining("Duplicate transfer blocked");
 
@@ -99,8 +104,8 @@ class TransferServiceTest {
         mode.setSecure(true);
         TransferService svc = new TransferService(transfers, accounts, mode, audit);
 
-        assertThatThrownBy(() ->
-                svc.transfer("7048123945", "8012345678", new BigDecimal("100.00"), null))
+        assertThatThrownBy(()
+                -> svc.transfer("7048123945", "8012345678", new BigDecimal("100.00"), null))
                 .isInstanceOf(ApiException.class)
                 .hasMessageContaining("idempotency key");
     }

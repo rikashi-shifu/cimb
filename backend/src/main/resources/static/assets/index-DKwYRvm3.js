@@ -12891,7 +12891,7 @@ function ry(x) {
     className: "mx-auto max-w-md",
     children: f.jsxs(Ot, {
       title: "Module 1 — Login (Authentication)",
-      cwe: "CWE-303",
+      cwe: "CWE-20",
       sr: "SR2",
       children: [
         f.jsx("p", {
@@ -12915,11 +12915,12 @@ function ry(x) {
                 children: [
                   f.jsx("p", {
                     className: "font-semibold text-gray-700",
-                    children: "CWE-303 attack demo",
+                    children: "CWE-20 attack demo",
                   }),
                   f.jsxs("p", {
                     children: [
-                      "The seeded password is ",
+                      "The seeded password is",
+                      " ",
                       f.jsx("code", {
                         className: "font-mono",
                         children: "Password1!",
@@ -12946,7 +12947,7 @@ function ry(x) {
                   }),
                   f.jsx("button", {
                     onClick: ul,
-                    className: "mt-1 text-[var(--cimb-red)] underline",
+                    className: "mt-1 text-(--cimb-red) underline",
                     children: 'Append "IGNORED_EXTRA" to password',
                   }),
                 ],
@@ -13007,7 +13008,7 @@ function ry(x) {
             "Mode is currently",
             " ",
             f.jsx("b", {
-              className: x.secure ? "text-green-700" : "text-[var(--cimb-red)]",
+              className: x.secure ? "text-green-700" : "text-(--cimb-red)",
               children: x.secure ? "SECURE (ON)" : "VULNERABLE (OFF)",
             }),
             ".",
@@ -13148,7 +13149,7 @@ function hy(x) {
     children: [
       f.jsxs(Ot, {
         title: "Module 2 — Card Payment",
-        cwe: "CWE-345",
+        cwe: "CWE-287",
         sr: "SR3",
         children: [
           f.jsxs("div", {
@@ -13322,7 +13323,7 @@ function vy(x) {
     children: [
       f.jsxs(Ot, {
         title: "Module 3 — Fund Transfer",
-        cwe: "CWE-840",
+        cwe: "CWE-675",
         sr: "SR5",
         children: [
           f.jsxs("div", {
@@ -13773,8 +13774,8 @@ function Sy(x) {
 }
 const by = [
   { id: "accounts", label: "My Accounts" },
-  { id: "payment", label: "Card Payment", tag: "CWE-345" },
-  { id: "transfer", label: "Fund Transfer", tag: "CWE-840" },
+  { id: "payment", label: "Card Payment", tag: "CWE-287" },
+  { id: "transfer", label: "Fund Transfer", tag: "CWE-675" },
   { id: "encryption", label: "Encryption / Raw DB", tag: "CWE-311" },
   { id: "audit", label: "Audit Log", tag: "SR5" },
 ];

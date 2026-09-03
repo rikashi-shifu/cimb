@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /**
- * Module 2 — Payment authorization endpoints (CWE-345 / SR3).
+ * Module 2 — Payment authorization endpoints (CWE-287 / SR3).
  */
 @RestController
 @RequestMapping("/api/payments")
@@ -23,18 +23,23 @@ public class PaymentController {
         this.sessions = sessions;
     }
 
-    /** Secure-mode step 1: obtain a signed instruction + demo OTP for the intended payment. */
+    /**
+     * Secure-mode step 1: obtain a signed instruction + demo OTP for the
+     * intended payment.
+     */
     @PostMapping("/prepare")
     public Map<String, Object> prepare(@RequestHeader(value = "X-Session-Token", required = false) String token,
-                                       @RequestBody PrepareRequest req) {
+            @RequestBody PrepareRequest req) {
         CurrentUser user = sessions.require(token);
         return service.prepare(user, req.amount(), req.merchant(), req.cardNumber());
     }
 
-    /** Submit the payment. Behaviour depends on the global Secure Mode. */
+    /**
+     * Submit the payment. Behaviour depends on the global Secure Mode.
+     */
     @PostMapping("/pay")
     public Map<String, Object> pay(@RequestHeader(value = "X-Session-Token", required = false) String token,
-                                   @RequestBody PayRequest req) {
+            @RequestBody PayRequest req) {
         CurrentUser user = sessions.require(token);
         return service.pay(user, new PaymentService.PayCommand(
                 req.paymentRef(), req.amount(), req.merchant(), req.cardNumber(),
@@ -48,10 +53,12 @@ public class PaymentController {
     }
 
     public record PrepareRequest(BigDecimal amount, String merchant, String cardNumber) {
+
     }
 
     public record PayRequest(String paymentRef, BigDecimal amount, String merchant,
-                             String cardNumber, String expiry, String cvv,
-                             String signature, String otp) {
+            String cardNumber, String expiry, String cvv,
+            String signature, String otp) {
+
     }
 }

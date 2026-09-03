@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** Module 2 — payment instruction signing/verification (CWE-345). */
+/**
+ * Module 2 — payment instruction signing/verification (CWE-287).
+ */
 class PaymentSignerTest {
 
     private PaymentSigner signer() {

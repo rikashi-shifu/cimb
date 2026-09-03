@@ -12,9 +12,9 @@ The _same_ user action visibly succeeds as an attack when OFF and is blocked whe
 
 | #   | Module                                                         | CWE     | Requirement |
 | --- | -------------------------------------------------------------- | ------- | ----------- |
-| 1   | Authentication (password truncation → full bcrypt + TOTP)      | CWE-303 | SR2         |
-| 2   | Payment authorization (non-3DS → OTP + signed instruction)     | CWE-345 | SR3         |
-| 3   | Duplicate transfer protection (double debit → idempotency key) | CWE-840 | SR5         |
+| 1   | Authentication (password truncation → full bcrypt + TOTP)      | CWE-20  | SR2         |
+| 2   | Payment authorization (non-3DS → OTP + signed instruction)     | CWE-287 | SR3         |
+| 3   | Duplicate transfer protection (double debit → idempotency key) | CWE-675 | SR5         |
 | 4   | Encryption at rest (plaintext → AES-256 + encrypted backup)    | CWE-311 | SR1 / SR6   |
 
 **Shared panels:** append-only, hash-chained **audit log** (SR5) and **role-based access
@@ -35,9 +35,9 @@ control** (SR7 — the Raw Database View and audit log are admin-only).
 cimb/
 ├── backend/            Spring Boot app (all four modules + shared panels)
 │   ├── src/main/java/com/cimb/demo/
-│   │   ├── auth/        Module 1 — CWE-303
-│   │   ├── payment/     Module 2 — CWE-345
-│   │   ├── transfer/    Module 3 — CWE-840
+│   │   ├── auth/        Module 1 — CWE-20
+│   │   ├── payment/     Module 2 — CWE-287
+│   │   ├── transfer/    Module 3 — CWE-675
 │   │   ├── account/     Module 4 — CWE-311 (+ Raw DB View, backup)
 │   │   ├── audit/       Hash-chained audit log (SR5)
 │   │   ├── session/     Roles + RBAC (SR7)
@@ -170,7 +170,7 @@ cd backend
 mvn test
 ```
 
-Coverage: AES round-trip & key validation, TOTP, the CWE-303 truncation vs full-compare, the
+Coverage: AES round-trip & key validation, TOTP, the CWE-20 truncation vs full-compare, the
 HMAC payment-signature verification, duplicate-transfer blocking, the audit hash chain
 (including tamper detection), and an end-to-end HTTP walkthrough of all four modules plus RBAC.
 
@@ -180,7 +180,7 @@ HMAC payment-signature verification, duplicate-transfer blocking, the audit hash
 
 > The Secure Mode toggle is in the top-right header and is **always visible**. It starts **OFF**.
 
-### Module 1 — Authentication (CWE-303 / SR2)
+### Module 1 — Authentication (CWE-20 / SR2)
 
 **Vulnerable (Secure OFF):**
 
@@ -195,7 +195,7 @@ HMAC payment-signature verification, duplicate-transfer blocking, the audit hash
 3. Enter the exact password `Password1!` → password accepted, an **OTP is shown on screen**.
 4. Type the OTP → **logged in** with the second factor (Secure2u).
 
-### Module 2 — Card Payment (CWE-345 / SR3) → _“Card Payment” tab_
+### Module 2 — Card Payment (CWE-287 / SR3) → _“Card Payment” tab_
 
 **Vulnerable (Secure OFF):**
 
@@ -209,7 +209,7 @@ HMAC payment-signature verification, duplicate-transfer blocking, the audit hash
 2. Tick **“Tamper amount after signing”** and pay again → **REJECTED** (altered instruction).
 3. Tick **“Send wrong OTP”** and pay again → **REJECTED** (invalid OTP).
 
-### Module 3 — Fund Transfer (CWE-840 / SR5) → _“Fund Transfer” tab_
+### Module 3 — Fund Transfer (CWE-675 / SR5) → _“Fund Transfer” tab_
 
 **Vulnerable (Secure OFF):**
 

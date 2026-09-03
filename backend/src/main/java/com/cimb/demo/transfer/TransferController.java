@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /**
- * Module 3 — Fund transfer endpoints (CWE-840 / SR5).
+ * Module 3 — Fund transfer endpoints (CWE-675 / SR5).
  */
 @RestController
 @RequestMapping("/api/transfers")
@@ -25,7 +25,7 @@ public class TransferController {
 
     @PostMapping
     public Map<String, Object> transfer(@RequestHeader(value = "X-Session-Token", required = false) String token,
-                                        @RequestBody TransferRequest req) {
+            @RequestBody TransferRequest req) {
         sessions.require(token);
         return service.transfer(req.fromAccount(), req.toAccount(), req.amount(), req.idempotencyKey());
     }
@@ -37,6 +37,7 @@ public class TransferController {
     }
 
     public record TransferRequest(@NotBlank String fromAccount, @NotBlank String toAccount,
-                                  BigDecimal amount, String idempotencyKey) {
+            BigDecimal amount, String idempotencyKey) {
+
     }
 }

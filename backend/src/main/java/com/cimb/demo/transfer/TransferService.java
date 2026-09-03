@@ -15,14 +15,15 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Module 3 — Duplicate transfer protection (CWE-840: Business Logic Errors, SR5).
+ * Module 3 — Duplicate transfer protection (CWE-675: Business Logic Errors,
+ * SR5).
  *
- * Secure Mode OFF (vulnerable): every submit debits the source account, so firing the same
- *   transfer twice debits it twice.
+ * Secure Mode OFF (vulnerable): every submit debits the source account, so
+ * firing the same transfer twice debits it twice.
  *
- * Secure Mode ON (fixed): the request carries an idempotency key; a key already used for a
- *   completed transfer is rejected (HTTP 409) and NO second debit occurs. The first result
- *   stands.
+ * Secure Mode ON (fixed): the request carries an idempotency key; a key already
+ * used for a completed transfer is rejected (HTTP 409) and NO second debit
+ * occurs. The first result stands.
  */
 @Service
 public class TransferService {
@@ -35,7 +36,7 @@ public class TransferService {
     private final AuditService audit;
 
     public TransferService(TransferRepository transfers, AccountRepository accounts,
-                           SecureModeState secureMode, AuditService audit) {
+            SecureModeState secureMode, AuditService audit) {
         this.transfers = transfers;
         this.accounts = accounts;
         this.secureMode = secureMode;
@@ -45,7 +46,7 @@ public class TransferService {
     // synchronized so two rapid "double submit" requests are serialised for the duplicate check.
     @Transactional
     public synchronized Map<String, Object> transfer(String fromAccount, String toAccount,
-                                                     BigDecimal amount, String idempotencyKey) {
+            BigDecimal amount, String idempotencyKey) {
         if (amount == null || amount.signum() <= 0) {
             throw ApiException.badRequest("Amount must be greater than zero");
         }
@@ -61,7 +62,7 @@ public class TransferService {
                         "idempotencyKey=" + idempotencyKey + " amount=" + amount);
                 throw ApiException.conflict(
                         "Duplicate transfer blocked: this idempotency key was already processed. "
-                                + "The account was NOT debited again.");
+                        + "The account was NOT debited again.");
             }
         }
         // Vulnerable path: idempotency key ignored — a repeat submit debits again.
@@ -84,7 +85,7 @@ public class TransferService {
         transfers.save(t);
         audit.record(fromAccount, "TRANSFER_COMPLETED",
                 "to=" + toAccount + " amount=" + amount + " secure=" + secureMode.isSecure()
-                        + " key=" + (idempotencyKey == null ? "none" : idempotencyKey));
+                + " key=" + (idempotencyKey == null ? "none" : idempotencyKey));
 
         return Map.of(
                 "status", COMPLETED,
